@@ -81,6 +81,9 @@ def set_gpu_for_tdp_profile(tdp_profile):
         if gpu_mode == 'DEFAULT':
           set_gpu_frequency_range(0, 0)
           return True
+        elif gpu_mode == 'POWERSAVE':
+          set_gpu_frequency_range(-1, -1)
+          return True
         elif gpu_mode == 'FIXED' and fixed_frequency:
           set_gpu_frequency_range(fixed_frequency, fixed_frequency)
           return True
@@ -116,6 +119,8 @@ def persist_gpu(minGpuFrequency, maxGpuFrequency, game_id):
 
   if minGpuFrequency == 0 and maxGpuFrequency == 0:
     gpu_mode = 'DEFAULT'
+  elif minGpuFrequency == -1 and maxGpuFrequency == -1:
+    gpu_mode = 'POWERSAVE'
   elif minGpuFrequency == maxGpuFrequency:
     gpu_mode = 'FIXED'
     profile_contents["fixedGpuFrequency"] = maxGpuFrequency

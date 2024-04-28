@@ -7,6 +7,7 @@ enum Mode {
   DEFAULT = 0,
   RANGE = 1,
   FIXED = 2,
+  POWERSAVE = 3,
 }
 
 const GpuModeSlider: FC<{ showSeparator: boolean }> = ({ showSeparator }) => {

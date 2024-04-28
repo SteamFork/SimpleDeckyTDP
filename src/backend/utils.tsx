@@ -30,6 +30,7 @@ export enum GpuModes {
   DEFAULT = "DEFAULT",
   RANGE = "RANGE",
   FIXED = "FIXED",
+  POWERSAVE = "POWERSAVE",
 }
 
 export enum ServerAPIMethods {

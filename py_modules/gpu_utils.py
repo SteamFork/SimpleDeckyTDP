@@ -50,6 +50,15 @@ def set_gpu_frequency(current_game_id):
     except Exception as e:
       decky_plugin.logger.error(f"{__name__} default mode error {e}")
       return False
+  elif gpu_mode == GpuModes.POWERSAVE.value:
+    try:
+      with open(GPU_LEVEL_PATH,'w') as f:
+        f.write("low")
+        f.close()
+      return True
+    except Exception as e:
+      decky_plugin.logger.error(f"{__name__} powersaver mode error {e}")
+      return False
   elif gpu_mode == GpuModes.RANGE.value:
     new_min = tdp_profile.get(GpuRange.MIN.value, 0)
     new_max = tdp_profile.get(GpuRange.MAX.value, 0)
@@ -70,11 +79,16 @@ def set_gpu_frequency_range(new_min: int, new_max: int):
     if not (new_min >= min and new_max <= max and new_min <= new_max):
       # invalid values, just change back to auto
       # decky_plugin.logger.info(f'auto')
-
-      with open(GPU_LEVEL_PATH,'w') as f:
-        f.write("auto")
-        f.close()
-      return True
+      if (new_min == 0):
+        with open(GPU_LEVEL_PATH,'w') as f:
+          f.write("auto")
+          f.close()
+        return True
+      elif (new_min == -1):
+        with open(GPU_LEVEL_PATH,'w') as f:
+          f.write("low")
+          f.close()
+        return True
     # decky_plugin.logger.info(f'manual')
 
     with open(GPU_LEVEL_PATH,'w') as file:
