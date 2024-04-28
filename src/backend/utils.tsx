@@ -110,7 +110,7 @@ export const createPollTdp =
 
 export const getLatestVersionNum = async (serverApi: any) => {
   const { result } = await serverApi.fetchNoCors(
-    "https://raw.githubusercontent.com/aarron-lee/SimpleDeckyTDP/main/package.json",
+    "https://raw.githubusercontent.com/SteamFork/SimpleDeckyTDP/main/package.json",
     { method: "GET" }
   );
 

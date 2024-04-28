@@ -16,7 +16,7 @@ def recursive_chmod(path, perms):
 
 def download_latest_build():
   # ssl._create_default_https_context = ssl._create_unverified_context
-  url = "http://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest"
+  url = "http://api.github.com/repos/SteamFork/SimpleDeckyTDP/releases/latest"
 
   gcontext = ssl.SSLContext()
 

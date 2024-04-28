@@ -41,89 +41,32 @@ This is a (formerly simple) Linux TDP Decky Plugin that wraps ryzenadj. Intended
 - ROG Ally TDP via WMI calls (allows for TDP control with secure boot)
 - etc
 
+## Deviations from Upstream
+* Adds an explicit GPU power saving mode as implemented in [JELOS](https://github.com/JustEnoughLinuxOS/distribution).
+
 ## Compatibility
 
-Tested on ChimeraOS Stable (45), NobaraOS 39, and Bazzite Deck Edition.
-
-Other distros not tested.
+Tested on [SteamFork](https://github.com/SteamFork), other distributions are not tested.
 
 Currently NOT compatible with Intel or Nvidia, this plugin is currently AMD APUs only
-
-## Requirements
-
-### WARNING: This plugin assumes you already have ryzenadj installed and can be located in your PATH
-
-Note that ryzenadj is NOT necessary if you plan on using a [ryzenadj override](#custom-tdp-method).
-
-ChimeraOS, Bazzite Deck Edition, and NobaraOS Deck edition, should already have ryzenadj pre-installed.
-
-To check this, you can run `which ryzenadj` in a terminal/console, which should print out a path to a ryzenadj binary.
-
-e.g.
-
-```
-$ which ryzenadj
-/usr/bin/ryzenadj
-```
-
-If you do not have ryzenadj installed, you will need to get a working copy installed onto your machine.
-
-To test your ryzenadj to make sure that it's functional, run the following:
-
-```
-$ sudo ryzenadj -i
-```
-
-This should print out a table that looks something like the following:
-
-```
-CPU Family: Rembrandt
-SMU BIOS Interface Version: 18
-Version: v0.13.0
-PM Table Version: 450005
-|        Name         |   Value   |     Parameter      |
-|---------------------|-----------|--------------------|
-| STAPM LIMIT         |     8.000 | stapm-limit        |
-| STAPM VALUE         |     0.062 |                    |
-```
-
-If you see an error, you may need to set `iomem=relaxed` as a boot parameter for your kernel, or disable secure boot.
 
 # Install
 
 ### Prerequisites
 
-Decky Loader must already be installed. If using ryzenadj for TDP control, secure boot must be disabled.
+Decky Loader must already be installed. If using ryzenadj for TDP control (Included w/ SteamFork), secure boot must be disabled.
 
 ### Quick Install / Update
 
 Run the following in terminal, then reboot. Note that this works both for installing or updating the plugin
 
-**IF ON BAZZITE OS, USE THE BAZZITE INSTALLER [HERE](#bazziteos-installer)**
-
 ```
-curl -L https://github.com/aarron-lee/SimpleDeckyTDP/raw/main/install.sh | sh
-```
-
-### BazziteOS installer
-
-The Bazzite installer does extra steps so that `Fix Steam Hardware Controls` functionality can work
-
-First install Decky Loader with this command in terminal:
-
-```
-ujust setup-decky
-```
-
-Then install SimpleDeckyTDP with:
-
-```
-ujust setup-decky simpledeckytdp
+curl -L https://github.com/SteamFork/SimpleDeckyTDP/raw/main/install.sh | sh
 ```
 
 ### Manual Install
 
-Download the latest release from the [releases page](https://github.com/aarron-lee/SimpleDeckyTDP/releases)
+Download the latest release from the [releases page](https://github.com/SteamFork/SimpleDeckyTDP/releases)
 
 Unzip the `tar.gz` file, and move the `SimpleDeckyTDP` folder to your `$HOME/homebrew/plugins` directory
 
@@ -143,7 +86,7 @@ Dependencies:
 - fully functional ryzenadj
 
 ```bash
-git clone https://github.com/aarron-lee/SimpleDeckyTDP.git
+git clone https://github.com/SteamFork/SimpleDeckyTDP.git
 
 cd SimpleDeckyTDP
 
@@ -176,7 +119,7 @@ sudo systemctl restart plugin_loader.service
 
 ### Desktop App
 
-[SimpleDeckyTDP-Desktop App](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop) - Experimental Electron frontend for the SimpleDeckyTDP Plugin's backend
+[SimpleDeckyTDP-Desktop App](https://github.com/SteamFork/SimpleDeckyTDP-Desktop) - Experimental Electron frontend for the SimpleDeckyTDP Plugin's backend
 
 - Note: the Desktop app does not have full feature parity with the Decky Plugin. Certain features cannot be implemented yet, such as:
   - per-game profiles
@@ -207,7 +150,7 @@ e.g.
 /path/to/script.sh 15
 ```
 
-You can see how it's used in the code [here](https://github.com/aarron-lee/SimpleDeckyTDP/blob/1ab6b6df468e983a1246ff378875bb2a370b5698/py_modules/cpu_utils.py#L18)
+You can see how it's used in the code [here](https://github.com/SteamFork/SimpleDeckyTDP/blob/1ab6b6df468e983a1246ff378875bb2a370b5698/py_modules/cpu_utils.py#L18)
 
 ### Custom Device settings
 
@@ -241,7 +184,7 @@ First try updating the plugin to the latest version.
 
 ```
 # update script
-curl -L https://github.com/aarron-lee/SimpleDeckyTDP/raw/main/install.sh | sh
+curl -L https://github.com/SteamFork/SimpleDeckyTDP/raw/main/install.sh | sh
 ```
 
 If this doesn't fix your issue, next try deleting your `$HOME/homebrew/settings/SimpleDeckyTDP/settings.json` file, and rebooting.
@@ -293,9 +236,10 @@ The ROG ally has some known issues related to CPU Boost and SMT.
 
 Thanks to the following for making this plugin possible:
 
+- [SimpleDeckyTDP](https://github.com/aarron-lee/SimpleDeckyTDP)
 - [hhd-adjustor](https://github.com/hhd-dev/adjustor/)
 - [hhd-hwinfo](https://github.com/hhd-dev/hwinfo)
 - [decky loader](https://github.com/SteamDeckHomebrew/decky-loader/)
 - [ryzenadj](https://github.com/FlyGoat/RyzenAdj)
 
-<!-- [![](https://img.shields.io/github/downloads/aarron-lee/SimpleDeckyTDP/total.svg)](https://github.com/aarron-lee/SimpleDeckyTDP/releases) [![](https://img.shields.io/github/downloads/aarron-lee/SimpleDeckyTDP/latest/total)](https://github.com/aarron-lee/SimpleDeckyTDP/releases/latest) [![](https://img.shields.io/github/v/release/aarron-lee/SimpleDeckyTDP)](https://github.com/aarron-lee/SimpleDeckyTDP/releases/latest) -->
+<!-- [![](https://img.shields.io/github/downloads/SteamFork/SimpleDeckyTDP/total.svg)](https://github.com/SteamFork/SimpleDeckyTDP/releases) [![](https://img.shields.io/github/downloads/SteamFork/SimpleDeckyTDP/latest/total)](https://github.com/SteamFork/SimpleDeckyTDP/releases/latest) [![](https://img.shields.io/github/v/release/SteamFork/SimpleDeckyTDP)](https://github.com/SteamFork/SimpleDeckyTDP/releases/latest) -->

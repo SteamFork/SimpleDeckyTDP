@@ -15,7 +15,7 @@ sudo rm -rf $HOME/homebrew/plugins/SimpleDeckyTDP
 
 echo "installing SimpleDeckyTDP plugin for TDP control"
 # download + install simple decky tdp
-curl -L $(curl -s https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/SimpleDeckyTDP.tar.gz
+curl -L $(curl -s https://api.github.com/repos/SteamFork/SimpleDeckyTDP/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/SimpleDeckyTDP.tar.gz
 sudo tar -xzf SimpleDeckyTDP.tar.gz -C $HOME/homebrew/plugins
 
 # install complete, remove build dir

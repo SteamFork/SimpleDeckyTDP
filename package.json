@@ -19,9 +19,9 @@
   "author": "Aarron L",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/aarron-lee/SimpleDeckyTDP/issues"
+    "url": "https://github.com/SteamFork/SimpleDeckyTDP/issues"
   },
-  "homepage": "https://github.com/aarron-lee/SimpleDeckyTDP",
+  "homepage": "https://github.com/SteamFork/SimpleDeckyTDP",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",
