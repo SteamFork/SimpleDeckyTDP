@@ -16,7 +16,7 @@
     "plugin",
     "legion-go"
   ],
-  "author": "Aarron L",
+  "author": "Aarron Lee, Fewtarius",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/SteamFork/SimpleDeckyTDP/issues"

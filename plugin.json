@@ -1,6 +1,6 @@
 {
   "name": "SimpleDeckyTDP",
-  "author": "Aarron Lee",
+  "author": "Aarron Lee, Fewtarius",
   "flags": ["root"],
   "publish": {
     "tags": ["tdp", "root", "non-deck"],
