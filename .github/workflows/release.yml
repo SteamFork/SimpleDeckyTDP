@@ -52,6 +52,7 @@ jobs:
       - name: download artifact
         uses: actions/download-artifact@v3
         with:
+          repository: SteamFork/SimpleDeckyTDP
           path: /tmp/artifacts
 
       - run: ls -R /tmp/artifacts
