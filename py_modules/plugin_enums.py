@@ -1,10 +1,10 @@
 from enum import Enum
 
 class GpuModes(Enum):
-  DEFAULT = "DEFAULT"
-  RANGE = "RANGE"
+  BALANCE = "BALANCE"
+  PERFORMANCE = "PERFORMANCE"
+  BATTERY = "BATTERY"
   FIXED = "FIXED"
-  POWERSAVE = "POWERSAVE"
 
 class GpuRange(Enum):
   MIN = "minGpuFrequency"

@@ -29,10 +29,10 @@ export const DesktopAdvancedOptions = [
 ] as string[];
 
 export enum GpuModes {
-  DEFAULT = "DEFAULT",
-  RANGE = "RANGE",
+  BALANCE = "BALANCE",
+  PERFORMANCE = "PERFORMANCE",
+  BATTERY = "BATTERY",
   FIXED = "FIXED",
-  POWERSAVE = "POWERSAVE",
 }
 
 export enum ServerAPIMethods {
