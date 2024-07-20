@@ -59,16 +59,15 @@ def ryzenadj(tdp: int):
         if advanced_options.get_setting(RogAllySettings.USE_WMI.value):
           return rog_ally.ryzenadj(tdp)
 
-    fast_tdp = (tdp+2)*1000
     tdp = tdp*1000
 
     if RYZENADJ_PATH:
       commands = [
         RYZENADJ_PATH,
         '--stapm-limit', f"{tdp}",
-        '--fast-limit', f"{fast_tdp}",
+        '--fast-limit', f"{tdp}",
         '--slow-limit', f"{tdp}",
-        '--apu-slow-limit', f"{tdp}"
+        '--tctl-temp', f"90"
       ]
 
       results = subprocess.call(commands)
