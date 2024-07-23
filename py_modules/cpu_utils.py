@@ -67,8 +67,8 @@ def ryzenadj(tdp: int):
         '--stapm-limit', f"{tdp}",
         '--fast-limit', f"{tdp}",
         '--slow-limit', f"{tdp}",
-        '--apu-slow-limit', f"{tdp}",
-        '--tctl-temp', f"97"
+        '--tctl-temp', f"95",
+        '--max-performance'
       ]
 
       results = subprocess.call(commands)
