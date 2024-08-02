@@ -15,7 +15,6 @@ from devices import legion_go, rog_ally
 
 RYZENADJ_PATH = shutil.which('ryzenadj')
 BOOST_PATH="/sys/devices/system/cpu/cpufreq/boost"
-PSTATE_BOOST_PATH="/sys/devices/system/cpu/amd_pstate/cpb_boost"
 AMD_PSTATE_PATH="/sys/devices/system/cpu/amd_pstate/status"
 AMD_SMT_PATH="/sys/devices/system/cpu/smt/control"
 
@@ -88,32 +87,21 @@ def get_cpb_boost_paths():
   return cpb_cpu_boost_paths
 
 def set_cpb_boost(enabled):
-  if os.path.exists(PSTATE_BOOST_PATH):
-    try:
-      with open(PSTATE_BOOST_PATH, "w") as f:
-        f.write("enabled" if enabled else "disabled")
-    except Exception:
-      with open(PSTATE_BOOST_PATH, "w") as f:
-        f.write("1" if enabled else "0")
-  else:
-    # global cpb boost toggle doesn't exist, fallback to setting it per-cpu
-    paths = get_cpb_boost_paths()
-    with file_timeout.time_limit(4):
-      for p in paths:
-        try:
-          with open(p, 'w') as file:
-            file.write("1" if enabled else "0")
-            file.close()
-            sleep(0.1)
-        except Exception as e:
-          decky_plugin.logger.error(e)
-          continue
-
+  # global cpb boost toggle doesn't exist, fallback to setting it per-cpu
+  paths = get_cpb_boost_paths()
+  with file_timeout.time_limit(4):
+    for p in paths:
+      try:
+        with open(p, 'w') as file:
+          file.write("1" if enabled else "0")
+          file.close()
+          sleep(0.1)
+      except Exception as e:
+        decky_plugin.logger.error(e)
+        continue
 
 def supports_cpu_boost():
-  if os.path.exists(PSTATE_BOOST_PATH) or os.path.exists(BOOST_PATH):
-    return True
-  elif os.path.exists(get_cpb_boost_paths()[0]):
+  if os.path.exists(get_cpb_boost_paths()[0]):
     return True
   return False
 
