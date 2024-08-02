@@ -88,12 +88,15 @@ def get_cpb_boost_paths():
 
 def set_cpb_boost(enabled):
   # global cpb boost toggle doesn't exist, fallback to setting it per-cpu
-  paths = get_cpb_boost_paths()
-  with file_timeout.time_limit(4):
-    for p in paths:
+  CPB_PATHS = get_cpb_boost_paths()
+  for CPB_PATH in CPB_PATHS:
+    if os.path.exists(CPB_PATH):
       try:
-        with open(p, 'w') as file:
-          file.write("1" if enabled else "0")
+        with open(CPB_PATH, 'w') as file:
+          if enabled:
+              file.write('1')
+          else:
+              file.write('0')
           file.close()
           sleep(0.1)
       except Exception as e:
