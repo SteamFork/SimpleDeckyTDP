@@ -3,7 +3,7 @@ import file_timeout
 from time import sleep
 import advanced_options
 from plugin_settings import bootstrap_profile, merge_tdp_profiles, get_tdp_profile, set_setting as persist_setting
-from cpu_utils import ryzenadj, set_cpu_boost, get_scaling_driver, set_smt, supports_cpu_boost
+from cpu_utils import ryzenadj, set_cpu_boost, get_scaling_driver, set_smt
 from gpu_utils import set_gpu_frequency_range
 import power_utils
 
@@ -57,7 +57,7 @@ def set_smt_for_tdp_profile(tdp_profile):
 def set_cpu_boost_for_tdp_profile(tdp_profile):
   cpu_boost = tdp_profile.get('cpuBoost', False)
 
-  if supports_cpu_boost():
+  if SCALING_DRIVER != 'amd-pstate-epp':
     set_cpu_boost(cpu_boost)
 
 def set_tdp_for_tdp_profile(tdp_profile):
