@@ -81,7 +81,7 @@ def get_cpb_boost_paths():
   cpu_nums = get_online_cpus()
 
   cpb_cpu_boost_paths = list(map(
-    lambda cpu_num: f'/sys/devices/system/cpu/cpu{cpu_num}/cpufreq/boost',
+    lambda cpu_num: f'/sys/devices/system/cpu/cpufreq/policy{cpu_num}/boost',
     cpu_nums
   ))
 
