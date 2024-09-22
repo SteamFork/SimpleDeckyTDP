@@ -7,7 +7,7 @@ import json
 import ssl
 import shutil
 
-API_URL = "https://api.github.com/repos/aarron-lee/SimpleDeckyTDP/releases/latest"
+API_URL = "https://api.github.com/repos/SteamFork/SimpleDeckyTDP/releases/latest"
 
 def recursive_chmod(path, perms):
   for dirpath, dirnames, filenames in os.walk(path):

@@ -18,6 +18,11 @@ const Gpu = () => {
         <GpuModeSlider showSeparator={gpuMode == GpuModes.BALANCE} />
       </DeckyRow>
 
+      {gpuMode === GpuModes.RANGE && (
+        <DeckyRow>
+          <GpuRangeSliders showSeparator />
+        </DeckyRow>
+      )}
       {gpuMode === GpuModes.FIXED && (
         <DeckyRow>
           <GpuFixedSlider />

@@ -3,7 +3,7 @@ import file_timeout
 from time import sleep
 # import advanced_options
 from plugin_settings import bootstrap_profile, merge_tdp_profiles, get_tdp_profile, set_setting as persist_setting
-from cpu_utils import ryzenadj, set_cpu_boost, get_scaling_driver, set_smt
+from cpu_utils import ryzenadj, set_cpu_boost, get_scaling_driver, set_smt, supports_cpu_boost
 from gpu_utils import set_gpu_frequency_range
 import power_utils
 
@@ -56,7 +56,9 @@ def set_smt_for_tdp_profile(tdp_profile):
 
 def set_cpu_boost_for_tdp_profile(tdp_profile):
   cpu_boost = tdp_profile.get('cpuBoost', False)
-  set_cpu_boost(cpu_boost)
+
+  if supports_cpu_boost():
+    set_cpu_boost(cpu_boost)
 
 def set_tdp_for_tdp_profile(tdp_profile):
   if tdp_profile.get('tdp'):
@@ -72,6 +74,7 @@ def set_gpu_for_tdp_profile(tdp_profile):
   min_frequency = tdp_profile.get('minGpuFrequency')
   max_frequency = tdp_profile.get('maxGpuFrequency')
 
+
   if gpu_mode:
     try:
       with file_timeout.time_limit(3):
@@ -86,6 +89,9 @@ def set_gpu_for_tdp_profile(tdp_profile):
           return True
         elif gpu_mode == 'FIXED' and fixed_frequency:
           set_gpu_frequency_range(fixed_frequency, fixed_frequency)
+          return True
+        elif gpu_mode == 'RANGE' and min_frequency and max_frequency:
+          set_gpu_frequency_range(min_frequency, max_frequency)
           return True
         return False
     except Exception as e:
@@ -123,6 +129,10 @@ def persist_gpu(minGpuFrequency, maxGpuFrequency, game_id):
   elif minGpuFrequency == maxGpuFrequency:
     gpu_mode = 'FIXED'
     profile_contents["fixedGpuFrequency"] = maxGpuFrequency
+  elif minGpuFrequency < maxGpuFrequency:
+    gpu_mode = 'RANGE'
+    profile_contents["minGpuFrequency"] = minGpuFrequency
+    profile_contents["maxGpuFrequency"] = maxGpuFrequency
   else:
     # invalid, return
     return
