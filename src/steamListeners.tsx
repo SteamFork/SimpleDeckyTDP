@@ -8,8 +8,15 @@ import {
   setAcPower,
   setCurrentGameInfo,
 } from "./redux-modules/settingsSlice";
-import { resumeAction } from "./redux-modules/extraActions";
-import { AdvancedOptionsEnum, getServerApi, logInfo } from "./backend/utils";
+import { resumeAction, suspendAction } from "./redux-modules/extraActions";
+import {
+  AdvancedOptionsEnum,
+  getCurrentAcPowerStatus,
+  getSupportsCustomAcPower,
+  logInfo,
+  setMaxTdp,
+} from "./backend/utils";
+import { debounce } from "lodash";
 
 let currentGameInfoListenerIntervalId: undefined | number;
 let previousIsAcPower: boolean | undefined;
@@ -46,6 +53,13 @@ export const currentGameInfoListener = () => {
 };
 
 export const suspendEventListener = () => {
+  const unregister = SteamClient.System.RegisterForOnSuspendRequest(() => {
+    store.dispatch(suspendAction());
+  });
+  return unregister;
+};
+
+export const resumeFromSuspendEventListener = () => {
   try {
     const unregister = SteamClient.System.RegisterForOnResumeFromSuspend(
       async () => {
@@ -59,10 +73,7 @@ export const suspendEventListener = () => {
           }
 
           if (advancedState[AdvancedOptionsEnum.MAX_TDP_ON_RESUME]) {
-            const serverApi = getServerApi();
-            if (serverApi) {
-              serverApi.callPluginMethod("set_max_tdp", {});
-            }
+            setMaxTdp();
           } else {
             store.dispatch(resumeAction());
           }
@@ -91,18 +102,47 @@ export const suspendEventListener = () => {
 
 let eACState: number | undefined;
 
-export const acPowerEventListener = () => {
+const setAcState = (newACState: number) => {
+  // eACState = 2 for AC power, 1 for Battery
+  if (newACState !== eACState) {
+    eACState = newACState;
+    store.dispatch(setAcPower(newACState));
+  }
+};
+
+let debouncedSetAcPower = debounce(setAcState, 1000);
+
+export const acPowerEventListener = async () => {
   try {
-    const unregister = SteamClient.System.RegisterForBatteryStateChanges(
-      (e: any) => {
-        // eACState = 2 for AC power, 1 for Battery
-        if (e.eACState !== eACState) {
-          eACState = e.eACState;
-          store.dispatch(setAcPower(e.eACState));
+    const supportsCustomAcPowerManagement = await getSupportsCustomAcPower();
+
+    if (supportsCustomAcPowerManagement) {
+      const intervalId = window.setInterval(async () => {
+        const current_ac_power_status = await getCurrentAcPowerStatus();
+
+        let newACState = 1;
+
+        if (current_ac_power_status === "1") {
+          newACState = 2;
         }
-      }
-    );
-    return unregister;
+
+        setAcState(newACState);
+      }, 1000);
+
+      const unregister = () => {
+        window.clearInterval(intervalId);
+      };
+
+      return unregister;
+    } else {
+      // use steam's battery state change
+      const unregister = SteamClient.System.RegisterForBatteryStateChanges(
+        (e: any) => {
+          debouncedSetAcPower(e.eACState);
+        }
+      );
+      return unregister;
+    }
   } catch (e) {
     logInfo(`error in ac power listener ${e}`);
   }

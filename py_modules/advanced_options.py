@@ -5,13 +5,12 @@ import file_timeout
 import decky_plugin
 from plugin_settings import get_nested_setting
 from enum import Enum
+from devices import rog_ally
+import device_utils
 
 ASUSCTL_PATH = shutil.which('asusctl')
 PLATFORM_PROFILE_PATH = '/sys/firmware/acpi/platform_profile'
 
-class Devices(Enum):
-  LEGION_GO = "83E1"
-  ROG_ALLY = "ROG Ally RC71L_RC71L"
 
 class DefaultSettings(Enum):
   ENABLE_TDP_CONTROL = 'enableTdpControl'
@@ -43,18 +42,6 @@ def modprobe_acpi_call():
 # e.g. get_setting(LegionGoSettings.CUSTOM_TDP_MODE.value)
 def get_setting(setting_name = ''):
   return get_nested_setting(f'advanced.{setting_name}')
-
-def get_device_name():
-  try:
-    with file_timeout.time_limit(2):
-      with open("/sys/devices/virtual/dmi/id/product_name", "r") as file:
-        device_name = file.read().strip()
-        file.close()
-
-        return device_name
-  except Exception as e:
-    decky_plugin.logger.error(f'{__name__} error while trying to read device name')
-    return ''
 
 def get_value(setting, default_value = False):
   current_val = get_nested_setting(
@@ -106,7 +93,7 @@ def get_default_options():
     'name': 'Enable per-game AC power TDP profiles',
     'type': 'boolean',
     'defaultValue': False,
-    'description': 'When plugged into AC power, use a separate per-game TDP profile.',
+    'description': 'When plugged into AC power, use a separate per-game TDP profile. Per-game profiles must be enabled',
     'currentValue': get_value(DefaultSettings.AC_POWER_PROFILES, False),
     'statePath': DefaultSettings.AC_POWER_PROFILES.value
   }
@@ -171,10 +158,9 @@ def get_default_options():
 
 def get_advanced_options():
   options = get_default_options()
-  device_name = get_device_name()
   supports_acpi_call = modprobe_acpi_call()
 
-  if device_name == Devices.LEGION_GO.value and supports_acpi_call:
+  if device_utils.is_legion_go() and supports_acpi_call:
     options.append({
       'name': 'Lenovo Custom TDP Mode',
       'type': 'boolean',
@@ -186,7 +172,7 @@ def get_advanced_options():
         'ifFalsy': [DefaultSettings.ENABLE_TDP_CONTROL.value]
       }
     })
-  if device_name == Devices.ROG_ALLY.value:
+  if device_utils.is_rog_ally():
     rog_ally_advanced_options(options)
 
 
@@ -213,27 +199,18 @@ def rog_ally_advanced_options(options):
   #     'currentValue': get_value(RogAllySettings.USE_ASUSCTL, True),
   #     'statePath': RogAllySettings.USE_ASUSCTL.value
   #   })
-  if supports_asus_wmi_tdp():
+  if rog_ally.supports_wmi_tdp():
     options.append({
       'name': 'Use Asus WMI for TDP',
       'type': 'boolean',
       'description': 'Use Asus WMI calls instead of ryzenadj',
-      'defaultValue': False,
-      'currentValue': get_value(RogAllySettings.USE_WMI, False),
+      'defaultValue': True,
+      'currentValue': get_value(RogAllySettings.USE_WMI, True),
       'statePath': RogAllySettings.USE_WMI.value,
       'disabled': {
         'ifFalsy': [DefaultSettings.ENABLE_TDP_CONTROL.value]
       }
     })
-
-FAST_WMI_PATH ='/sys/devices/platform/asus-nb-wmi/ppt_fppt'
-SLOW_WMI_PATH = '/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt'
-STAPM_WMI_PATH = '/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl'
-
-def supports_asus_wmi_tdp():
-  if os.path.exists(FAST_WMI_PATH) and os.path.exists(SLOW_WMI_PATH) and os.path.exists(STAPM_WMI_PATH):
-    return True
-  return False
 
 def tdp_control_enabled():
   return get_setting(DefaultSettings.ENABLE_TDP_CONTROL.value)

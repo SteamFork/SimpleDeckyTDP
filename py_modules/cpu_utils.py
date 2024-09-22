@@ -6,15 +6,13 @@ import shutil
 import decky_plugin
 import file_timeout
 import logging
-import plugin_settings
 import advanced_options
 from time import sleep
-from advanced_options import LegionGoSettings, Devices, RogAllySettings
-import glob
+from advanced_options import LegionGoSettings, RogAllySettings
 from devices import legion_go, rog_ally
+import device_utils
 
 RYZENADJ_PATH = shutil.which('ryzenadj')
-BOOST_PATH="/sys/devices/system/cpu/cpufreq/boost"
 AMD_PSTATE_PATH="/sys/devices/system/cpu/amd_pstate/status"
 AMD_SMT_PATH="/sys/devices/system/cpu/smt/control"
 
@@ -36,20 +34,13 @@ def ryzenadj(tdp: int):
   if not advanced_options.tdp_control_enabled():
     return
 
-  settings = plugin_settings.get_saved_settings()
   try:
-    if settings.get("overrideRyzenadj"):
-      # use custom Tdp instead of ryzenadj
-      commands = [settings.get("overrideRyzenadj"), tdp]
-      results = subprocess.call(commands)
-      return results
-
     with file_timeout.time_limit(4):
-      if advanced_options.get_setting(
+      if device_utils.is_legion_go() and advanced_options.get_setting(
         LegionGoSettings.CUSTOM_TDP_MODE.value
       ):
         return legion_go.ryzenadj(tdp)
-      elif advanced_options.get_device_name() == Devices.ROG_ALLY.value:
+      elif device_utils.is_rog_ally():
         if advanced_options.get_setting(RogAllySettings.USE_PLATFORM_PROFILE.value):
           rog_ally.set_platform_profile(tdp)
         #   if advanced_options.get_setting(RogAllySettings.USE_ASUSCTL.value):
@@ -59,18 +50,16 @@ def ryzenadj(tdp: int):
         if advanced_options.get_setting(RogAllySettings.USE_WMI.value):
           return rog_ally.ryzenadj(tdp)
 
+    fast_tdp = (tdp+2)*1000
     tdp = tdp*1000
 
     if RYZENADJ_PATH:
       commands = [
         RYZENADJ_PATH,
         '--stapm-limit', f"{tdp}",
-        '--fast-limit', f"{tdp}",
+        '--fast-limit', f"{fast_tdp}",
         '--slow-limit', f"{tdp}",
-        '--tctl-temp', f"95",
-        '--apu-skin-temp', f"95",
-        '--dgpu-skin-temp', f"95",
-        '--max-performance'
+        '--apu-slow-limit', f"{tdp}"
       ]
 
       results = subprocess.call(commands)
@@ -90,40 +79,36 @@ def get_cpb_boost_paths():
 
 def set_cpb_boost(enabled):
   # global cpb boost toggle doesn't exist, fallback to setting it per-cpu
-  CPB_PATHS = get_cpb_boost_paths()
-  for CPB_PATH in CPB_PATHS:
-    if os.path.exists(CPB_PATH):
-      try:
-        with open(CPB_PATH, 'w') as file:
-          if enabled:
-              file.write('1')
-          else:
-              file.write('0')
-          file.close()
-          sleep(0.1)
-      except Exception as e:
-        decky_plugin.logger.error(e)
-        continue
+  paths = get_cpb_boost_paths()
+  try:
+    with file_timeout.time_limit(4):
+      for p in paths:
+        try:
+          with open(p, 'w') as file:
+            file.write("1" if enabled else "0")
+            file.close()
+            sleep(0.1)
+        except Exception as e:
+          decky_plugin.logger.error(e)
+          continue
+  except Exception as e:
+    logging.error(e)
 
 def supports_cpu_boost():
-  if os.path.exists(get_cpb_boost_paths()[0]):
-    return True
+  try:
+    with file_timeout.time_limit(4):
+      cpu_boost_paths = get_cpb_boost_paths()
+      if len(cpu_boost_paths) > 0 and os.path.exists(cpu_boost_paths[0]):
+        return True
+  except Exception as e:
+    logging.error(e)
+
   return False
 
 def set_cpu_boost(enabled = True):
   try:
-    set_cpb_boost(enabled)
-
-    # legacy boost path for acpi cpufreq
-    if os.path.exists(BOOST_PATH):
-      with open(BOOST_PATH, 'w') as file:
-        if enabled:
-          file.write('1')
-        else:
-          file.write('0')
-        file.close()
-
-    return True
+    with file_timeout.time_limit(3):
+      set_cpb_boost(enabled)
   except Exception as e:
     logging.error(e)
     return False

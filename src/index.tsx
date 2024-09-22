@@ -1,14 +1,11 @@
-import { definePlugin, ServerAPI, staticClasses } from "decky-frontend-lib";
-import { FaShip } from "react-icons/fa";
-import {
-  createServerApiHelpers,
-  saveServerApi,
-  setValuesForGameId,
-} from "./backend/utils";
+import { definePlugin } from "@decky/api";
+import { BsCpuFill } from "react-icons/bs";
+import { getSettings, setValuesForGameId } from "./backend/utils";
 import { store } from "./redux-modules/store";
 import {
   acPowerEventListener,
   currentGameInfoListener,
+  resumeFromSuspendEventListener,
   suspendEventListener,
 } from "./steamListeners";
 import { updateInitialLoad } from "./redux-modules/settingsSlice";
@@ -18,47 +15,62 @@ import { cleanupAction } from "./redux-modules/extraActions";
 import steamPatch from "./steamPatch/steamPatch";
 import { fetchPowerControlInfo } from "./redux-modules/thunks";
 import AppContainer from "./App";
+import { initializePollingStore } from "./redux-modules/pollingMiddleware";
 
-export default definePlugin((serverApi: ServerAPI) => {
-  saveServerApi(serverApi);
-
-  const { getSettings } = createServerApiHelpers(serverApi);
-
+export default definePlugin(() => {
+  initializePollingStore(store);
   // fetch settings from backend, send into redux state
   getSettings().then((result) => {
-    if (result.success) {
-      const results = result.result || {};
+    const results = result || {};
 
-      store.dispatch(
-        updateInitialLoad({
-          ...results,
-        })
-      );
-      store.dispatch(fetchPowerControlInfo());
+    store.dispatch(
+      updateInitialLoad({
+        ...results,
+      })
+    );
+    store.dispatch(fetchPowerControlInfo());
 
-      setTimeout(() => {
-        setValuesForGameId("default");
-      }, 0);
-    }
+    setTimeout(() => {
+      setValuesForGameId("default");
+    }, 0);
   });
 
   // const unpatch = steamPatch();
 
   const onUnmount = currentGameInfoListener();
+  const unregisterResumeFromSuspendListener = resumeFromSuspendEventListener();
   const unregisterSuspendListener = suspendEventListener();
-  let unregisterAcPowerListener = acPowerEventListener();
+
+  let unregisterAcPowerListener: any;
+
+  acPowerEventListener().then((unregister) => {
+    unregisterAcPowerListener = unregister;
+  });
 
   return {
-    title: <div className={staticClasses.Title}>SimpleDeckyTDP</div>,
+    name: "SimpleDeckyTDP",
     content: <AppContainer />,
-    icon: <FaShip />,
+    icon: <BsCpuFill />,
     onDismount: () => {
       try {
         store.dispatch(cleanupAction());
         // if (unpatch) unpatch();
         if (onUnmount) onUnmount();
-        if (unregisterSuspendListener) unregisterSuspendListener();
-        if (unregisterAcPowerListener) unregisterAcPowerListener();
+        if (
+          unregisterSuspendListener &&
+          typeof unregisterSuspendListener === "function"
+        )
+          unregisterSuspendListener();
+        if (
+          unregisterResumeFromSuspendListener &&
+          typeof unregisterResumeFromSuspendListener === "function"
+        )
+          unregisterResumeFromSuspendListener();
+        if (
+          unregisterAcPowerListener &&
+          typeof unregisterAcPowerListener === "function"
+        )
+          unregisterAcPowerListener();
       } catch (e) {
         console.error(e);
       }
