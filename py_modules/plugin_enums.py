@@ -1,9 +1,9 @@
 from enum import Enum
 
 class GpuModes(Enum):
+  BATTERY = "BATTERY"
   BALANCE = "BALANCE"
   PERFORMANCE = "PERFORMANCE"
-  BATTERY = "BATTERY"
   FIXED = "FIXED"
 
 class GpuRange(Enum):

@@ -115,11 +115,11 @@ def persist_gpu(minGpuFrequency, maxGpuFrequency, game_id):
   profile_contents = {}
 
   if minGpuFrequency == 0 and maxGpuFrequency == 0:
+    gpu_mode = 'BATTERY'
+  elif minGpuFrequency == -1 and maxGpuFrequency == -1:
     gpu_mode = 'BALANCE'
   elif minGpuFrequency == -1 and maxGpuFrequency == 0:
     gpu_mode = 'PERFORMANCE'
-  elif minGpuFrequency == -1 and maxGpuFrequency == -1:
-    gpu_mode = 'BATTERY'
   elif minGpuFrequency == maxGpuFrequency:
     gpu_mode = 'FIXED'
     profile_contents["fixedGpuFrequency"] = maxGpuFrequency

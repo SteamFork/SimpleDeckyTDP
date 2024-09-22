@@ -33,9 +33,9 @@ export const DesktopAdvancedOptions = [
 ] as string[];
 
 export enum GpuModes {
+  BATTERY = "BATTERY",
   BALANCE = "BALANCE",
   PERFORMANCE = "PERFORMANCE",
-  BATTERY = "BATTERY",
   FIXED = "FIXED",
 }
 
