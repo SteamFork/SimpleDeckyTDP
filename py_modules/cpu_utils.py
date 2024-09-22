@@ -68,7 +68,6 @@ def ryzenadj(tdp: int):
         '--fast-limit', f"{tdp}",
         '--slow-limit', f"{tdp}",
         '--tctl-temp', f"95",
-        '--apu-slow-limit', f"{tdp}",
         '--max-performance'
       ]
 
