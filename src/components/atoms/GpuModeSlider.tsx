@@ -4,10 +4,10 @@ import useGpuMode from "../../hooks/useGpuMode";
 import { DeckySlider, NotchLabel } from "./DeckyFrontendLib";
 
 enum Mode {
-  FIXED = 0,
-  BATTERY = 1,
-  BALANCE = 2,
-  PERFORMANCE = 3
+  BALANCE = 0,
+  PERFORMANCE = 1
+  BATTERY = 2,
+  FIXED = 3,
 }
 
 const GpuModeSlider: FC<{ showSeparator: boolean }> = ({ showSeparator }) => {
