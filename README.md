@@ -142,7 +142,7 @@ sudo systemctl restart plugin_loader.service
 
 ### Desktop App
 
-[SimpleDeckyTDP-Desktop App](https://github.com/aaron-lee/SimpleDeckyTDP-Desktop) - Desktop port of SimpleDeckyTDP
+[SimpleDeckyTDP-Desktop App](https://github.com/aarron-lee/SimpleDeckyTDP-Desktop) - Desktop port of SimpleDeckyTDP
 
 - Note: the Desktop app does not have full feature parity with the Decky Plugin. Certain features cannot be implemented yet, such as:
   - per-game profiles
