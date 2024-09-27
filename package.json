@@ -1,6 +1,6 @@
 {
   "name": "simple-decky-tdp",
-  "version": "0.4.4-SF",
+  "version": "0.4.4-SF2",
   "description": "Very simple RyzenAdj Decky plugin",
   "type": "module",
   "scripts": {
@@ -19,9 +19,9 @@
   "author": "Aarron Lee, Fewtarius",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/SteamFork/SimpleDeckyTDP/issues"
+    "url": "https://github.com/aarron-lee/SimpleDeckyTDP/issues"
   },
-  "homepage": "https://github.com/SteamFork/SimpleDeckyTDP",
+  "homepage": "https://github.com/aarron-lee/SimpleDeckyTDP",
   "devDependencies": {
     "@decky/rollup": "^1.0.1",
     "@rollup/plugin-commonjs": "^26.0.1",
